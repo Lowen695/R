@@ -13,4 +13,4 @@ df[3,'b']
 mta <- matrix(1:9, nrow = 3)
 colnames(mta) <- c('A','B','C')
 mta[1:2,]
-mta[]
+mta[9]
