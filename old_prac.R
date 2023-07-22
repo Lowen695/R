@@ -7,7 +7,7 @@ library(ggplot2)
 setwd('/Users/fahuiliu/Desktop/R_Practice/first')
 # save.image('testrdata2')
 
-qq
+qq56
 setwd('/Users/fahuiliu/Desktop/R_Practice/first/')
 g <- getwd()
 sink('output')
