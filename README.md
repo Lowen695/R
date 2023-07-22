@@ -1,4 +1,3 @@
 ## R learning
 
-Self-learning materials.  
-this repositery contains the practices following the book Advanced R from Hadley Wickham.
+This repository serves as a self-learning resource and includes practice exercises and examples derived from the "Advanced R" book by Hadley Wickham.
