@@ -39,3 +39,7 @@ info <- data.frame(
 id <- match(grades,info$grade)
 info[id,]
 
+
+# section 1 ---------------------------------------------------------------
+
+
