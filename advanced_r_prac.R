@@ -14,3 +14,5 @@ mta <- matrix(1:9, nrow = 3)
 colnames(mta) <- c('A','B','C')
 mta[1:2,]
 mta[9]
+
+vals <- outer(1:5, 1:5, FUN = "paste", sep = ",")
