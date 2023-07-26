@@ -155,3 +155,45 @@ DFF2 <- dff %>% mutate(chinese = case_when(chinese >= 80 ~ 'Perfect',
                                 is.na(chinese) ~ ' ',
                                 TRUE ~ 'unqualified'))
 
+
+set.seed(123)
+df_dup <- dff %>% 
+  slice_sample(n = 60, replace = TRUE)
+
+df_dup %>% filter(between(math,70,80), sex == '男')
+
+df_dup %>% filter(if_all(everything(),~!is.na(.x)))
+df_dup %>% filter(if_any(everything(),~is.na(.x)))
+df_dup %>%filter(if_any(where(~is.character(.x)), ~is.na(.x)))
+
+dff %>% slice_max(math,n=3)
+
+df_dup %>% distinct(sex, math,.keep_all = FALSE)
+
+df_dup %>% drop_na()
+
+dup_rows <- duplicated(df_dup) | duplicated(df_dup, fromLast = TRUE)
+df_dup_all_duplicated <- df_dup[dup_rows, ]
+
+df_dup_all_duplicated <- arrange(df_dup_all_duplicated, desc(name))
+
+df_grouped <- dff %>% group_nest(sex)
+test <- df_grouped[[2]][[1]]
+
+df_grouped2 <- dff %>% group_by(sex) %>% group_map(~slice_head(.x,n=3)) # 3 separated dataframes
+df_grouped2[1]
+df_grouped3 <- dff %>% group_by(sex) %>% slice_head(n=3)     # one dataframe
+df_grouped4 <- dff %>% group_by(sex) %>% mutate()
+
+
+
+# group summarise ---------------------------------------------------------
+
+dff %>% group_by(sex) %>% summarise(across(where(is.numeric),~nth(na.omit(.),n=1)))
+dff %>% group_by(class) %>% summarise(across(where(is.numeric),c(sum=sum,mean=mean,min=min),na.rm=TRUE)) %>% 
+  pivot_longer(-class, names_to = c('VARS','.value'),names_sep = '_')
+
+
+
+
+
