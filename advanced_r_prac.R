@@ -1,5 +1,6 @@
 library(tidyverse)
 library(formatR)
+library(readxl)
 source("Score_Conv.R")
 # options(error = browser)
 options(error = NULL)
@@ -116,6 +117,41 @@ mtcars %>%
 
 # ~ is needed for anonymous functions only in purrr context. 
 str(df)
-v2 <- data.frame(t(data.frame(c(1.2,2.3,4.4,6.1))))
+v2 <- data.frame(t(data.frame(c(1.2,2.3,4.4,6.1),c(8,8,8,8))))
 names(v2) <- names(df)
 DF <- add_row(df, v2, .before = 2)
+DF2 <- rows_append(df,v2)
+rownames(DF2) <- 1:nrow(DF2)
+
+dt <- tribble(
+  ~observation, ~A_count, ~B_count, ~A_dbh, ~B_dbh,
+  "Richmond(Sam)",   7,       2,   100,   110,
+  "Windsor(Ash)",   10,       5,   80,     87,
+  "Bilpin(Jules)",   5,       8,   95,     90)
+  knitr::kable(dt, align="c")
+
+tidy_dt <- dt %>% 
+  pivot_longer(-observation, names_to = c('Species','.value'),
+               names_sep = '_') %>% 
+  separate(observation, into = c('site','sureyor'))
+  
+ dff <- read_xlsx('/Users/fahuiliu/Desktop/untitled folder/数据集/配套数据/ExamDatas_NAs.xlsx') 
+dff %>% select(where(is.numeric))
+
+dff %>% 
+  select(where(is.numeric)) %>% 
+  select(where(~ sum(.x, na.rm = TRUE) >3000))
+
+dff %>% relocate(where(is.numeric),.after = class) %>% 
+  rename(Math = math)
+
+dff %>% rename_with(~paste0('NEW-',.x),matches('m'))
+
+dff %>% mutate(across(.cols=c(4,5),.fns = function(x) x+88), 
+               across(.cols=c(6,7),.fns = ~.x/3))
+
+DFF2 <- dff %>% mutate(chinese = case_when(chinese >= 80 ~ 'Perfect',
+                                chinese >= 60 ~ 'good',
+                                is.na(chinese) ~ ' ',
+                                TRUE ~ 'unqualified'))
+
