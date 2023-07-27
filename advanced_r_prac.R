@@ -1,10 +1,13 @@
 library(tidyverse)
 library(formatR)
 library(readxl)
+library(svDialogs)
+library(plotly)
+
 source("Score_Conv.R")
 # options(error = browser)
 options(error = NULL)
-options(error = traceback)
+options(error = recover)
 
 df <- data.frame(aiu = 1:5, aboap = c('auyt','b','cop','d','e'), stringsAsFactors = TRUE)
 type.convert(df)
@@ -206,6 +209,56 @@ dfRowwise <- dff %>%
 dfRowwise2 <- dff %>% mutate(total = rowSums(across(where(is.numeric)),na.rm = TRUE))
 
 dfRowwise3 <- dff %>% mutate(total = pmap_dbl(select_if(., is.numeric), sum, na.rm=TRUE))
+
+
+if (!require(svDialogs)) uninstall.packages("svDialogs")
+
+options <- c("Option 1", "Option 2", "Option 3","Option 4")
+res <- dlg_list(c(month.name,options), multiple = TRUE)
+str_split(res$res, ' ')
+
+
+# ggplot2 -----------------------------------------------------------------
+
+best_in_class = mpg %>% # 选取每种车型hwy值最大的样本 group_by(class) %>%
+  slice_max(hwy, n = 1)
+
+p1 <- ggplot(mpg,aes(x = displ, y = hwy,color = cyl))+
+  geom_point(size=3)+
+  geom_point(shape = 21,size=3,color='black')+
+  # scale_color_gradient(low = 'orange',high='blue')+
+  scale_y_continuous(breaks = seq(15,55,by = 5))+
+  labs(title = 'Ggplot2 test', x = 'X-TEST',y = 'Y-TEST', color = 'CYL')+
+  coord_cartesian(ylim = c(10, 50))+
+  scale_color_distiller(palette = 'Set2')+
+  theme(legend.position = "right")+
+  annotate(geom = 'text', x = c(2,4),y=48,label = c('a1','a2'),angle=90)+
+  geom_label(data = best_in_class, aes(label = model))
+
+ggplotly(p1)
+
+
+
+# error handling ----------------------------------------------------------
+
+div <- function(m, n){
+  if(!is.numeric(m) | !is.numeric(n)){
+    stop('error: inputs are not numeric!')
+  }else if (n == 0){
+    warning('n cannot be 0!')
+    88
+  }else{
+    m/n
+  }
+}
+
+tryCatch(div(3,0),
+         error = function(err) err,
+         warning = function(warn) cat(paste0(warn,'be carefull the inf!'))
+         )
+
+
+
 
 
 
