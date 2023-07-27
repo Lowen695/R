@@ -193,7 +193,19 @@ dff %>% group_by(sex) %>% summarise(across(where(is.numeric),~nth(na.omit(.),n=1
 dff %>% group_by(class) %>% summarise(across(where(is.numeric),c(sum=sum,mean=mean,min=min),na.rm=TRUE)) %>% 
   pivot_longer(-class, names_to = c('VARS','.value'),names_sep = '_')
 
+dff %>% count(class,sex, sort = TRUE)
+dff %>% group_by(math_level = cut(math,breaks = c(0,60,75,80,100),right = FALSE)) %>% tally()
 
+dff %>% add_tally(sex)
+dff %>% group_by(math_level = cut(math,breaks = c(0,60,75,80,100),right = FALSE)) %>% add_tally()
+
+dfRowwise <- dff %>% 
+  rowwise() %>% 
+  mutate(total = sum(c_across(where(is.numeric)), na.rm = TRUE)) # SLOW
+
+dfRowwise2 <- dff %>% mutate(total = rowSums(across(where(is.numeric)),na.rm = TRUE))
+
+dfRowwise3 <- dff %>% mutate(total = pmap_dbl(select_if(., is.numeric), sum, na.rm=TRUE))
 
 
 
