@@ -3,11 +3,12 @@ library(formatR)
 library(readxl)
 library(svDialogs)
 library(plotly)
-
+library(rstatix)
 source("Score_Conv.R")
 # options(error = browser)
 options(error = NULL)
-options(error = recover)
+# options(error = recover)
+
 
 df <- data.frame(aiu = 1:5, aboap = c('auyt','b','cop','d','e'), stringsAsFactors = TRUE)
 type.convert(df)
@@ -90,7 +91,7 @@ dfNew <- expand.grid(type = c('A','B','C'), class = c('X','L','XL'))
 
 x <- c('优','中','良','优','良','良','中')
 x
-x1 <- factor(x, levels = c('中','良','优'))
+x1 <- factor(x, levels = c('中','良','优'), ordered = TRUE)
 x1
 sort(x1)
 
@@ -223,7 +224,8 @@ str_split(res$res, ' ')
 best_in_class = mpg %>% # 选取每种车型hwy值最大的样本 group_by(class) %>%
   slice_max(hwy, n = 1)
 
-p1 <- ggplot(mpg,aes(x = displ, y = hwy,color = cyl))+
+ggplot(mpg,aes(x = displ, y = hwy,color = cyl))+
+  geom_segment(aes(xend = displ, yend = 0)) +
   geom_point(size=3)+
   geom_point(shape = 21,size=3,color='black')+
   # scale_color_gradient(low = 'orange',high='blue')+
@@ -235,13 +237,12 @@ p1 <- ggplot(mpg,aes(x = displ, y = hwy,color = cyl))+
   annotate(geom = 'text', x = c(2,4),y=48,label = c('a1','a2'),angle=90)+
   geom_label(data = best_in_class, aes(label = model))
 
-ggplotly(p1)
-
+# ggplotly(p1)
 
 
 # error handling ----------------------------------------------------------
 
-div <- function(m, n){
+div = function(m, n){
   if(!is.numeric(m) | !is.numeric(n)){
     stop('error: inputs are not numeric!')
   }else if (n == 0){
@@ -257,8 +258,14 @@ tryCatch(div(3,0),
          warning = function(warn) cat(paste0(warn,'be carefull the inf!'))
          )
 
+# general -----------------------------------------------------------------
 
+dff8 <- dff %>% select(last_col(1:0))
 
+dff %>% mutate(across(where(is.numeric),~round(.x,digits = -1)))
+get_mode(round(dff$chinese,digits=-1))
 
+tail(sort(table(dff$chinese)),3)
+str_c(str_dup(' ',0:10),'ABNDKLADGDAHFKLDJH')
 
 
