@@ -4,6 +4,7 @@ library(readxl)
 library(svDialogs)
 library(plotly)
 library(rstatix)
+library(lubridate)
 source("Score_Conv.R")
 # options(error = browser)
 options(error = NULL)
@@ -211,12 +212,9 @@ dfRowwise2 <- dff %>% mutate(total = rowSums(across(where(is.numeric)),na.rm = T
 
 dfRowwise3 <- dff %>% mutate(total = pmap_dbl(select_if(., is.numeric), sum, na.rm=TRUE))
 
-
-if (!require(svDialogs)) uninstall.packages("svDialogs")
-
 options <- c("Option 1", "Option 2", "Option 3","Option 4")
 res <- dlg_list(c(month.name,options), multiple = TRUE)
-str_split(res$res, ' ')
+str_split(res$res, ' ')[[1]]
 
 
 # ggplot2 -----------------------------------------------------------------
@@ -233,7 +231,8 @@ ggplot(mpg,aes(x = displ, y = hwy,color = cyl))+
   labs(title = 'Ggplot2 test', x = 'X-TEST',y = 'Y-TEST', color = 'CYL')+
   coord_cartesian(ylim = c(10, 50))+
   scale_color_distiller(palette = 'Set2')+
-  theme(legend.position = "right")+
+  theme(legend.position = "right",
+        plot.title = element_text(size=20, hjust=0.5))+
   annotate(geom = 'text', x = c(2,4),y=48,label = c('a1','a2'),angle=90)+
   geom_label(data = best_in_class, aes(label = model))
 
@@ -242,16 +241,16 @@ ggplot(mpg,aes(x = displ, y = hwy,color = cyl))+
 
 # error handling ----------------------------------------------------------
 
-div = function(m, n){
-  if(!is.numeric(m) | !is.numeric(n)){
-    stop('error: inputs are not numeric!')
-  }else if (n == 0){
-    warning('n cannot be 0!')
-    88
-  }else{
-    m/n
+   div = function(m, n){
+    if(!is.numeric(m) | !is.numeric(n)){
+      stop('error: inputs are not numeric!')
+    }else if (n == 0){
+      warning('n cannot be 0!')
+      88
+    }else{
+      m/n
+    }
   }
-}
 
 tryCatch(div(3,0),
          error = function(err) err,
@@ -267,5 +266,45 @@ get_mode(round(dff$chinese,digits=-1))
 
 tail(sort(table(dff$chinese)),3)
 str_c(str_dup(' ',0:10),'ABNDKLADGDAHFKLDJH')
+str_trim("gb")
+glueStr = 888666
+str_glue('This is the testing of {glueStr} using str_glue.pdf')
+
+str_count('ABHED','AUYED')
+
+now()
+
+t = ydm("202224+04")
+format(t,'%Y/%m/%d')
+yday(t)
+week(t)
+
+output4 = vector('list',4)
+for (i in 1:4){
+  output4[[i]] = list(i, i+1,i+2)
+}
+
+unlist(output4)
+typeof(output4)
+unnest_wider(tibble(output4),3)
+
+pathName = '/Users/fahuiliu/Desktop/untitled folder/数据集/配套数据/学生成绩.xlsx'
+dfMulSheets = map_dfr(set_names(excel_sheets(pathName)),~read_xlsx(pathName, sheet = .x), .id='sheet')
+rm(dfMulSheets)
+
+df_dup2 = df_dup 
+df_dup2[5,'chinese'] = 66
+df_dup_avg = df_dup2 %>% group_by(name) %>% summarise(across(where(is.numeric),mean))
+
+dm = as.data.frame(table(df_dup$name))
+
+
+
+
+
+
+
+
+
 
 
